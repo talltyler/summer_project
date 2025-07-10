@@ -1,0 +1,16 @@
+name = "aquarium-products"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+platform = "node"
+
+[env.production]
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "aquarium-db"
+database_id = "your-database-id-here"
+
+[env.development]
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "aquarium-db"
+database_id = "your-database-id-here"

@@ -1,0 +1,21 @@
+{
+  "name": "aquarium-products",
+  "version": "1.0.0",
+  "description": "Product management system that will become a 3D aquarium",
+  "main": "functions/api/[[path]].js",
+  "platform": "node",
+  "scripts": {
+    "dev": "wrangler pages dev public --compatibility-date=2024-01-01",
+    "deploy": "wrangler pages deploy public",
+    "db:migrate": "wrangler d1 execute aquarium-db --file=src/db/migrations/001_initial_schema.sql",
+    "db:seed": "node src/db/seeds/sample_products.js",
+    "build": "echo 'No build step needed for this setup'"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.24.0"
+  }
+}
