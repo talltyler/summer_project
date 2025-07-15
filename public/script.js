@@ -192,6 +192,7 @@ function handleAddProduct(event) {
     };
     
     createProduct(productData);
+    console.log(productData.name + " Created!");
 }
 
 // Placeholder functions for future implementation

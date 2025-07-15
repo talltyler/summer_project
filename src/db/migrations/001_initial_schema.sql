@@ -1,5 +1,5 @@
 -- Users table (for future auth system)
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE users (
 );
 
 -- Products table (generic now, will become fish later)
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     description TEXT,
@@ -24,8 +24,8 @@ CREATE TABLE products (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_products_category ON products(category);
-CREATE INDEX idx_products_rating ON products(user_rating);
-CREATE INDEX idx_products_created_by ON products(created_by);
-CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
+CREATE INDEX IF NOT EXISTS idx_products_rating ON products(user_rating);
+CREATE INDEX IF NOT EXISTS idx_products_created_by ON products(created_by);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
