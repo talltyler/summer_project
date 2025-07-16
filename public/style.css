@@ -189,3 +189,7 @@ header h1 {
 .modal-content button:hover {
     background-color: #3182ce;
 }
+
+#registration_form {
+    display: none;
+}

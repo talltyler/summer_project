@@ -3,6 +3,8 @@ import { query, queryFirst, execute } from '../db/connection.js';
 export class User {
   constructor(data = {}) {
     this.id = data.id || null;
+    this.first_name = data.first_name || '';
+    this.last_name = data.last_name || '';
     this.username = data.username || '';
     this.email = data.email || '';
     this.password_hash = data.password_hash || '';
@@ -34,12 +36,14 @@ export class User {
   // Create a new user
   static async create(db, data) {
     const sql = `
-      INSERT INTO users (username, email, password_hash, created_at, updated_at)
-      VALUES (?, ?, ?, datetime('now'), datetime('now'))
+      INSERT INTO users (username, first_name, last_name, email, password_hash, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     `;
     
     const params = [
       data.username,
+      data.first_name,
+      data.last_name,
       data.email,
       data.password_hash
     ];

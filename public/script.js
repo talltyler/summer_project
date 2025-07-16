@@ -203,3 +203,20 @@ function editProduct(id) {
 // Make functions globally available
 window.deleteProduct = deleteProduct;
 window.editProduct = editProduct;
+
+function open_registration() {
+    document.getElementById('registration_form').style.display="block";
+}
+
+function register() {
+    let form = document.getElementById('registration_form');
+    let username = document.getElementById('username');
+    let first_name = document.getElementById('first_name');
+    let last_name = document.getElementById('last_name');
+    let email = document.getElementById('email');
+    let password = document.getElementById('password');
+
+    fetch("/api/user",{method: "POST", body: {
+        username, first_name, last_name, email, password
+    }})
+}

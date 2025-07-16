@@ -1,4 +1,5 @@
 import { productRoutes } from '../../src/routes/products.js';
+import { userRoutes } from '../../src/routes/users.js';
 
 export async function onRequest(context) {
   const { request, env } = context;
