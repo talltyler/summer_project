@@ -1,30 +1,31 @@
-import { Product } from '../models/Product.js';
+import { User } from '../models/User.js';
 import { getDatabase } from '../db/connection.js';
 
-export const productRoutes = {
-  // GET /api/products - List all products with optional filtering
+export const userRoutes = {
+  // GET /api/users - List all users with optional filtering
   async list(request, env) {
     try {
       const url = new URL(request.url);
-      const category = url.searchParams.get('category');
-      const search = url.searchParams.get('search');
-      const sortBy = url.searchParams.get('sortBy') || 'created_at';
-      const sortOrder = url.searchParams.get('sortOrder') || 'desc';
+      const first_name = url.searchParams.get('first_name');
+      const last_name = url.searchParams.get('last_name');
+      const username = url.searchParams.get('username');
+      const email = url.searchParams.get('email');
       
+
       const db = getDatabase(env);
       const filters = {
-        category,
-        search,
-        sortBy,
-        sortOrder
+        first_name,
+        last_name,
+        username,
+        email
       };
       
-      const products = await Product.findAll(db, filters);
+      const users = await User.findAll(db, filters);
       
       return new Response(JSON.stringify({
         success: true,
-        data: products,
-        count: products.length
+        data: users,
+        count: users.length
       }), {
         headers: { 'Content-Type': 'application/json' }
       });
@@ -39,16 +40,16 @@ export const productRoutes = {
     }
   },
 
-  // POST /api/products - Create new product
+  // POST /api/users - Create new user
   async create(request, env) {
     try {
       const data = await request.json();
       
       // Basic validation
-      if (!data.name || !data.category) {
+      if (!data.username || !data.email) {
         return new Response(JSON.stringify({
           success: false,
-          error: 'Name and category are required'
+          error: 'Username and email are required'
         }), {
           status: 400,
           headers: { 'Content-Type': 'application/json' }
@@ -57,20 +58,20 @@ export const productRoutes = {
       
       const db = getDatabase(env);
       
-      // Create product
-      const product = await Product.create(db, {
-        name: data.name,
-        description: data.description || '',
-        category: data.category,
-        tags: data.tags || [],
-        user_rating: 0,
-        rating_count: 0,
-        created_by: data.created_by || null
+      // Create user
+      const user = await User.create(db, {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        username: data.username,
+        email: data.email,
+        password_hash: data.password_hash,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
       });
       
       return new Response(JSON.stringify({
         success: true,
-        data: product
+        data: user
       }), {
         status: 201,
         headers: { 'Content-Type': 'application/json' }
@@ -86,16 +87,16 @@ export const productRoutes = {
     }
   },
 
-  // GET /api/products/:id - Get single product
+  // GET /api/users/:id - Get single user
   async get(request, env, id) {
     try {
       const db = getDatabase(env);
-      const product = await Product.findById(db, id);
+      const user = await User.findById(db, id);
       
-      if (!product) {
+      if (!user) {
         return new Response(JSON.stringify({
           success: false,
-          error: 'Product not found'
+          error: 'User not found'
         }), {
           status: 404,
           headers: { 'Content-Type': 'application/json' }
@@ -104,7 +105,7 @@ export const productRoutes = {
       
       return new Response(JSON.stringify({
         success: true,
-        data: product
+        data: user
       }), {
         headers: { 'Content-Type': 'application/json' }
       });
@@ -119,29 +120,29 @@ export const productRoutes = {
     }
   },
 
-  // PUT /api/products/:id - Update product
+  // PUT /api/user/:id - Update user
   async update(request, env, id) {
     try {
       const data = await request.json();
       const db = getDatabase(env);
-      const product = await Product.findById(db, id);
+      const user = await User.findById(db, id);
       
-      if (!product) {
+      if (!user) {
         return new Response(JSON.stringify({
           success: false,
-          error: 'Product not found'
+          error: 'User not found'
         }), {
           status: 404,
           headers: { 'Content-Type': 'application/json' }
         });
       }
       
-      // Update product
-      await product.update(db, data);
+      // Update user
+      await user.update(db, data);
       
       return new Response(JSON.stringify({
         success: true,
-        data: product
+        data: user
       }), {
         headers: { 'Content-Type': 'application/json' }
       });
@@ -156,27 +157,27 @@ export const productRoutes = {
     }
   },
 
-  // DELETE /api/products/:id - Delete product
+  // DELETE /api/user/:id - Delete user
   async delete(request, env, id) {
     try {
       const db = getDatabase(env);
-      const product = await Product.findById(db, id);
+      const user = await User.findById(db, id);
       
-      if (!product) {
+      if (!user) {
         return new Response(JSON.stringify({
           success: false,
-          error: 'Product not found'
+          error: 'User not found'
         }), {
           status: 404,
           headers: { 'Content-Type': 'application/json' }
         });
       }
       
-      await product.delete(db);
+      await user.delete(db);
       
       return new Response(JSON.stringify({
         success: true,
-        message: 'Product deleted successfully'
+        message: 'User deleted successfully'
       }), {
         headers: { 'Content-Type': 'application/json' }
       });

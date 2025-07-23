@@ -89,6 +89,59 @@ export async function onRequest(context) {
       });
     }
   }
+
+  // Route users API
+  if (path.startsWith('/api/users')) {
+    const segments = path.split('/');
+    const id = segments[3]; // /api/users/:id
+    
+    try {
+      let response;
+      
+      if (method === 'GET' && !id) {
+        response = await userRoutes.list(request, env);
+      } else if (method === 'POST' && !id) {
+        response = await userRoutes.create(request, env);
+      } else if (method === 'GET' && id) {
+        response = await userRoutes.get(request, env, id);
+      } else if (method === 'PUT' && id) {
+        response = await userRoutes.update(request, env, id);
+      } else if (method === 'DELETE' && id) {
+        response = await userRoutes.delete(request, env, id);
+      } else {
+        response = new Response(JSON.stringify({
+          success: false,
+          error: 'Route not found'
+        }), {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      
+      // Add CORS headers to response
+      const headers = new Headers(response.headers);
+      Object.entries(corsHeaders).forEach(([key, value]) => {
+        headers.set(key, value);
+      });
+      
+      return new Response(response.body, {
+        status: response.status,
+        headers
+      });
+      
+    } catch (error) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: error.message
+      }), {
+        status: 500,
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      });
+    }
+  }
   
   // Default 404
   return new Response(JSON.stringify({

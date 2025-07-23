@@ -6,6 +6,7 @@ const productsGrid = document.getElementById('products-grid');
 const addProductBtn = document.getElementById('add-product-btn');
 const addProductModal = document.getElementById('add-product-modal');
 const addProductForm = document.getElementById('add-product-form');
+const registrationForm = document.getElementById('registration-form');
 const searchInput = document.getElementById('search-input');
 const categoryFilter = document.getElementById('category-filter');
 const closeModal = document.querySelector('.close');
@@ -24,6 +25,7 @@ function setupEventListeners() {
     addProductBtn.addEventListener('click', openAddProductModal);
     closeModal.addEventListener('click', closeAddProductModal);
     addProductForm.addEventListener('submit', handleAddProduct);
+    registrationForm.addEventListener('submit', handleRegister);
     searchInput.addEventListener('input', filterProducts);
     categoryFilter.addEventListener('change', filterProducts);
     
@@ -208,15 +210,37 @@ function open_registration() {
     document.getElementById('registration_form').style.display="block";
 }
 
-function register() {
-    let form = document.getElementById('registration_form');
-    let username = document.getElementById('username');
-    let first_name = document.getElementById('first_name');
-    let last_name = document.getElementById('last_name');
-    let email = document.getElementById('email');
-    let password = document.getElementById('password');
+async function handleRegister(event) {
+    event.preventDefault();
+    
+    const userData = {
+        username: document.getElementById('username').value,
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value,
+        email: document.getElementById('email').value,
+        password_hash: document.getElementById('password').value // Note: In production, hash this client-side
+    };
 
-    fetch("/api/user",{method: "POST", body: {
-        username, first_name, last_name, email, password
-    }})
+    try {
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Registration successful!');
+            document.getElementById('registration_form').style.display = 'none';
+            registrationForm.reset();
+        } else {
+            alert('Registration failed: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        alert('Registration failed');
+    }
 }

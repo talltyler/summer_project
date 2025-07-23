@@ -13,14 +13,14 @@
             <p>Building towards a 3D Aquarium Experience</p>
         </header>
         <button onclick="open_registration()"> register</button>
-        <div id="registration_form"> 
-           <form action="#"> 
-            <input name="username" id="username" placeholder="username"> </input> <br>
-            <input name="first_name" id="first_name" placeholder="first_name"> </input> <br>
-            <input name="last_name" id="last_name" placeholder="last_name"> </input> <br>
-            <input name="email" id="email" placeholder="email" type = "email"> </input> <br>
-            <input name="password" id="password" placeholder="password" type="password"> </input> <br>
-            <input type="submit" onsubmit="register()"> </input>
+        <div id="registration_form" style="display:none;"> 
+           <form id="registration-form"> 
+            <input name="username" id="username" placeholder="username" required> <br>
+            <input name="first_name" id="first_name" placeholder="first_name" required> <br>
+            <input name="last_name" id="last_name" placeholder="last_name" required> <br>
+            <input name="email" id="email" placeholder="email" type="email" required> <br>
+            <input name="password" id="password" placeholder="password" type="password" required> <br>
+            <input type="submit" value="Register">
            </form>  </div>
         <main>
             <section class="controls">
