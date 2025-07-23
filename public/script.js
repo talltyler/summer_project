@@ -7,6 +7,7 @@ const addProductBtn = document.getElementById('add-product-btn');
 const addProductModal = document.getElementById('add-product-modal');
 const addProductForm = document.getElementById('add-product-form');
 const registrationForm = document.getElementById('registration-form');
+const loginForm = document.getElementById('login-form');
 const searchInput = document.getElementById('search-input');
 const categoryFilter = document.getElementById('category-filter');
 const closeModal = document.querySelector('.close');
@@ -26,6 +27,7 @@ function setupEventListeners() {
     closeModal.addEventListener('click', closeAddProductModal);
     addProductForm.addEventListener('submit', handleAddProduct);
     registrationForm.addEventListener('submit', handleRegister);
+    loginForm.addEventListener('submit', handleLogin);
     searchInput.addEventListener('input', filterProducts);
     categoryFilter.addEventListener('change', filterProducts);
     
@@ -210,6 +212,10 @@ function open_registration() {
     document.getElementById('registration_form').style.display="block";
 }
 
+function open_login() {
+    document.getElementById('login_form').style.display="block";
+}
+
 async function handleRegister(event) {
     event.preventDefault();
     
@@ -218,7 +224,7 @@ async function handleRegister(event) {
         first_name: document.getElementById('first_name').value,
         last_name: document.getElementById('last_name').value,
         email: document.getElementById('email').value,
-        password_hash: document.getElementById('password').value // Note: In production, hash this client-side
+        password: document.getElementById('password').value // Note: In production, hash this client-side
     };
 
     try {
@@ -242,5 +248,39 @@ async function handleRegister(event) {
     } catch (error) {
         console.error('Registration error:', error);
         alert('Registration failed');
+    }
+}
+
+async function handleLogin(event) {
+    event.preventDefault();
+    const username = document.getElementById("something");
+    const password = document.getElementById("something2");
+    console.log(username, password);
+    const userData = {
+        username: username.value,
+        password: password.value // Note: In production, hash this client-side
+    };
+    console.log(userData);
+    try {
+        const response = await fetch('/api/users/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Login successful!');
+            document.getElementById('login_form').style.display = 'none';
+            loginForm.reset();
+        } else {
+            alert('Login failed: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed');
     }
 }

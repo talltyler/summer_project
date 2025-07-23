@@ -100,6 +100,8 @@ export async function onRequest(context) {
       
       if (method === 'GET' && !id) {
         response = await userRoutes.list(request, env);
+      } else if (method === 'POST' && path.startsWith("/api/users/login")) {
+        response = await userRoutes.login(request, env);
       } else if (method === 'POST' && !id) {
         response = await userRoutes.create(request, env);
       } else if (method === 'GET' && id) {
