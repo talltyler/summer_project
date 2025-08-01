@@ -1,4 +1,5 @@
 import { query, queryFirst, execute } from '../db/connection.js';
+import {Session} from './Session.js';
 
 export class Product {
   constructor(data = {}) {
@@ -16,17 +17,23 @@ export class Product {
 
   // Get all products with optional filtering
   static async findAll(db, filters = {}) {
-    let sql = 'SELECT * FROM products';
+    let sql = `
+      SELECT 
+        p.*,
+        u.username as created_by_username
+      FROM products p
+      LEFT JOIN users u ON p.created_by = u.id
+    `;
     const params = [];
     const conditions = [];
 
     if (filters.category) {
-      conditions.push('category = ?');
+      conditions.push('p.category = ?');
       params.push(filters.category);
     }
 
     if (filters.search) {
-      conditions.push('(name LIKE ? OR description LIKE ?)');
+      conditions.push('(p.name LIKE ? OR p.description LIKE ?)');
       params.push(`%${filters.search}%`, `%${filters.search}%`);
     }
 
@@ -36,11 +43,17 @@ export class Product {
 
     const sortBy = filters.sortBy || 'created_at';
     const sortOrder = filters.sortOrder || 'desc';
-    sql += ` ORDER BY ${sortBy} ${sortOrder}`;
+    sql += ` ORDER BY p.${sortBy} ${sortOrder}`;
 
     const result = await query(db, sql, params);
     return result.results.map(row => {
       const product = new Product(row);
+      
+      // Replace created_by ID with username
+      if (row.created_by_username) {
+        product.created_by = row.created_by_username;
+      }
+      
       if (typeof product.tags === 'string') {
         try {
           product.tags = JSON.parse(product.tags);

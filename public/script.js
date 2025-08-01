@@ -132,6 +132,7 @@ function createProductCard(product) {
     
     card.innerHTML = `
         <h3>${product.name}</h3>
+        <div class="created_by">Created by: ${product.created_by || 'Anonymous'}</div>
         <div class="category">${product.category}</div>
         <div class="rating">${rating} (${product.user_rating}/5)</div>
         <p>${product.description || 'No description available'}</p>

@@ -1,5 +1,6 @@
 import { Product } from '../models/Product.js';
 import { getDatabase } from '../db/connection.js';
+import { Session } from '../models/Session.js';
 
 export const productRoutes = {
   // GET /api/products - List all products with optional filtering
@@ -43,6 +44,8 @@ export const productRoutes = {
   async create(request, env) {
     try {
       const data = await request.json();
+      const cookies = request.headers.get('Cookie').split(';');
+      const token = cookies[cookies.length - 1].trim().split('=')[1];
       
       // Basic validation
       if (!data.name || !data.category) {
@@ -57,6 +60,18 @@ export const productRoutes = {
       
       const db = getDatabase(env);
       
+      const session = await Session.findByToken(db, token);
+      
+      if (session?.data?.user_id === undefined) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'User not authenticated'
+        }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
       // Create product
       const product = await Product.create(db, {
         name: data.name,
@@ -65,7 +80,7 @@ export const productRoutes = {
         tags: data.tags || [],
         user_rating: 0,
         rating_count: 0,
-        created_by: data.created_by || null
+        created_by: session.data.user_id,
       });
       
       return new Response(JSON.stringify({

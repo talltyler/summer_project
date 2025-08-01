@@ -25,6 +25,14 @@ CREATE TABLE IF NOT EXISTS products (
     FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
+-- Products table (generic now, will become fish later)
+CREATE TABLE IF NOT EXISTS sessions (
+    token TEXT PRIMARY KEY,
+    data TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
 CREATE INDEX IF NOT EXISTS idx_products_rating ON products(user_rating);

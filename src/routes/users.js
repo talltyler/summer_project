@@ -1,4 +1,5 @@
 import { User } from '../models/User.js';
+import {Session} from '../models/Session.js';
 import { getDatabase } from '../db/connection.js';
 import bcrypt from "bcryptjs";
 
@@ -103,7 +104,10 @@ export const userRoutes = {
       if (!data.username || !data.password) {
         return new Response(JSON.stringify({
           success: false,
-          error: 'Username and password are required'
+          error: 'Username and password are required',
+          headers: {
+
+          }
         }), {
           status: 400,
           headers: { 'Content-Type': 'application/json' }
@@ -121,12 +125,35 @@ export const userRoutes = {
         });
       });
       if (result) {
+        const cookieId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        // const cookieId = await new Promise((resolve, reject) => {
+        //   bcrypt.hash(user.id, 10, (err, hash) => {
+        //     if (err) reject(err);
+        //     else resolve(hash);
+        //   });
+        // });
+
+        await Session.create(db, {
+          token: cookieId,
+          data: {
+            user_id: user.id,
+            username: user.username,
+            first_name: user.first_name,
+            last_name: user.last_name
+          }
+        });
+
         return new Response(JSON.stringify({
           success: true,
-          data: user
+          data: user,
         }), {
           status: 201,
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json', 
+            'Set-Cookie': [
+              `token=${cookieId}; Path=/; HttpOnly; Secure; SameSite=Strict`
+            ]
+           }
         });
 
       } else {
