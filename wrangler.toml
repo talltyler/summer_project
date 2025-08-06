@@ -1,6 +1,7 @@
 name = "aquarium-products"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "public"
 
 [[d1_databases]]
 binding = "DB"
@@ -13,8 +14,8 @@ binding = "DB"
 database_name = "aquarium-db"
 database_id = "75bd790a-c51a-441d-8d81-06dd83edd342"
 
-[env.development]
-[[env.development.d1_databases]]
+[env.preview]
+[[env.preview.d1_databases]]
 binding = "DB"
 database_name = "aquarium-db"
 database_id = "75bd790a-c51a-441d-8d81-06dd83edd342"
