@@ -12,6 +12,9 @@ const searchInput = document.getElementById('search-input');
 const categoryFilter = document.getElementById('category-filter');
 const closeModal = document.querySelector('.close');
 
+// Log-In Check
+let isLoggedIn = false;
+
 // State
 let products = [];
 
@@ -20,10 +23,10 @@ document.addEventListener('DOMContentLoaded', function() {
     loadProducts();
     setupEventListeners();
 });
-
+console.log(username);
 // Event Listeners
 function setupEventListeners() {
-    addProductBtn.addEventListener('click', openAddProductModal);
+    addProductBtn.addEventListener('click', handleAddProductClick);
     closeModal.addEventListener('click', closeAddProductModal);
     addProductForm.addEventListener('submit', handleAddProduct);
     registrationForm.addEventListener('submit', handleRegister);
@@ -37,6 +40,14 @@ function setupEventListeners() {
             closeAddProductModal();
         }
     });
+}
+
+function handleAddProductClick() {
+    if (isLoggedIn) {
+        openAddProductModal();
+    } else {
+        alert('Log in to add products.');
+    }
 }
 
 // API Functions
@@ -277,6 +288,7 @@ async function handleLogin(event) {
             alert('Login successful!');
             document.getElementById('login_form').style.display = 'none';
             loginForm.reset();
+            isLoggedIn = true;
         } else {
             alert('Login failed: ' + result.error);
         }

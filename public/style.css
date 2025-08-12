@@ -124,7 +124,9 @@ button[onclick="open_login()"]:hover {
 }
 
 .controls button:hover {
+    transition: transform 0.2s;
     background-color: #3182ce;
+    transform: translateY(-2px);
 }
 
 .products-grid {
@@ -201,8 +203,18 @@ button[onclick="open_login()"]:hover {
     color: white;
 }
 
+.edit-btn:hover {
+    background-color: #2ccb6e;
+    color: white;
+}
+
 .delete-btn {
     background-color: #f56565;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #d93030;
     color: white;
 }
 
