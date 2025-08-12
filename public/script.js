@@ -191,9 +191,10 @@ function filterProducts() {
 }
 
 // Form Handlers
-function handleAddProduct(event) {
+async function handleAddProduct(event) {
     event.preventDefault();
-    
+    const image = document.getElementById('product-image').value;
+    const image_url = await upload(image);
     const formData = new FormData(addProductForm);
     const tags = document.getElementById('product-tags').value
         .split(',')
@@ -204,11 +205,15 @@ function handleAddProduct(event) {
         name: document.getElementById('product-name').value,
         description: document.getElementById('product-description').value,
         category: document.getElementById('product-category').value,
-        tags: tags
+        tags: tags,
     };
     
     createProduct(productData);
     console.log(productData.name + " Created!");
+}
+
+async function upload(image) {
+    return await fetch("/api/users/upload", {method:"POST", data:image});
 }
 
 // Placeholder functions for future implementation

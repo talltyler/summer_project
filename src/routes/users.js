@@ -41,6 +41,70 @@ export const userRoutes = {
     }
   },
 
+  async upload(request, env) {
+    console.log(request);
+    return new Response(JSON.stringify({
+        success: true,
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    /*
+    try {
+      const data = await request.json();
+
+      // Basic validation
+      if (!data.username || !data.email) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Username and email are required'
+        }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      const db = getDatabase(env);
+
+      // Use async/await with bcrypt
+      const hash = await new Promise((resolve, reject) => {
+        bcrypt.hash(data.password, 10, (err, hash) => {
+          if (err) reject(err);
+          else resolve(hash);
+        });
+      });
+
+      // Create user
+      const user = await User.create(db, {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        username: data.username,
+        email: data.email,
+        password_hash: hash,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      });
+
+      return new Response(JSON.stringify({
+        success: true,
+        data: user
+      }), {
+        status: 201,
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+    } catch (error) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: error.message
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+      */
+  },
+
   // POST /api/users - Create new user
   async create(request, env) {
     try {

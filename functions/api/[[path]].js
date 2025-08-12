@@ -36,6 +36,7 @@ export async function onRequest(context) {
       }
     });
   }
+
   
   // Route products API
   if (path.startsWith('/api/products')) {
@@ -102,7 +103,9 @@ export async function onRequest(context) {
         response = await userRoutes.list(request, env);
       } else if (method === 'POST' && path.startsWith("/api/users/login")) {
         response = await userRoutes.login(request, env);
-      } else if (method === 'POST' && !id) {
+      } else if (method === 'POST' && path.startsWith("/api/users/upload")) {
+        response = await userRoutes.upload(request, env);
+       } else if (method === 'POST' && !id) {
         response = await userRoutes.create(request, env);
       } else if (method === 'GET' && id) {
         response = await userRoutes.get(request, env, id);
@@ -118,6 +121,7 @@ export async function onRequest(context) {
           status: 404,
           headers: { 'Content-Type': 'application/json' }
         });
+       
       }
       
       // Add CORS headers to response
