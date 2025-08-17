@@ -19,3 +19,7 @@ database_id = "75bd790a-c51a-441d-8d81-06dd83edd342"
 binding = "DB"
 database_name = "aquarium-db"
 database_id = "75bd790a-c51a-441d-8d81-06dd83edd342"
+
+[[r2_buckets]]
+binding = "SUMMER_PROJECT"
+bucket_name = "summer-project"

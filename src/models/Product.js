@@ -8,6 +8,7 @@ export class Product {
     this.description = data.description || '';
     this.category = data.category || '';
     this.tags = data.tags || [];
+    this.image_url = data.image_url || '';
     this.user_rating = data.user_rating || 0;
     this.rating_count = data.rating_count || 0;
     this.created_by = data.created_by || null;
@@ -85,8 +86,8 @@ export class Product {
   // Create a new product
   static async create(db, data) {
     const sql = `
-      INSERT INTO products (name, description, category, tags, user_rating, rating_count, created_by, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+      INSERT INTO products (name, description, category, tags, image_url, user_rating, rating_count, created_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     `;
     
     const tags = Array.isArray(data.tags) ? JSON.stringify(data.tags) : '[]';
@@ -95,6 +96,7 @@ export class Product {
       data.description || '',
       data.category,
       tags,
+      data.image_url,
       data.user_rating || 0,
       data.rating_count || 0,
       data.created_by || null
@@ -111,7 +113,7 @@ export class Product {
   async update(db, data) {
     const sql = `
       UPDATE products 
-      SET name = ?, description = ?, category = ?, tags = ?, user_rating = ?, rating_count = ?, updated_at = datetime('now')
+      SET name = ?, description = ?, category = ?, tags = ?, image_url = ?, user_rating = ?, rating_count = ?, updated_at = datetime('now')
       WHERE id = ?
     `;
     
@@ -121,6 +123,7 @@ export class Product {
       data.description !== undefined ? data.description : this.description,
       data.category !== undefined ? data.category : this.category,
       tags,
+      data.image_url !== undefined ? data.image_url : this.image_url,
       data.user_rating !== undefined ? data.user_rating : this.user_rating,
       data.rating_count !== undefined ? data.rating_count : this.rating_count,
       this.id

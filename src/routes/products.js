@@ -43,12 +43,19 @@ export const productRoutes = {
   // POST /api/products - Create new product
   async create(request, env) {
     try {
-      const data = await request.json();
+      const formData = await request.formData();
+      
+      const name = formData.get('name');
+      const category = formData.get('category');
+      const description = formData.get('description') || '';
+      const tags = formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [];
+      const image = formData.get('image');
+
       const cookies = request.headers.get('Cookie').split(';');
       const token = cookies[cookies.length - 1].trim().split('=')[1];
       
       // Basic validation
-      if (!data.name || !data.category) {
+      if (!name || !category) {
         return new Response(JSON.stringify({
           success: false,
           error: 'Name and category are required'
@@ -72,24 +79,40 @@ export const productRoutes = {
         });
       }
 
+      let image_url = null;
+      if (
+        image && (image instanceof File) && // if we have a file
+        image.type.startsWith('image/') && // if it's an image
+        image.size <= 5 * 1024 * 1024 // if it's less than 5MB 
+      ) {
+        // Generate a unique filename
+        const fileName = `${Date.now()}-${Math.floor(Math.random() * 0xFFFFFF).toString(16)}.${image.type.split('/')[1]}`;
+        
+        // Upload to R2 bucket
+        await env.SUMMER_PROJECT.put(fileName, image.stream(), {
+          httpMetadata: {
+            contentType: image.type,
+          },
+        });
+        image_url = `/image/${fileName}`;
+      }
+      console.log('image_url', image_url);
       // Create product
       const product = await Product.create(db, {
-        name: data.name,
-        description: data.description || '',
-        category: data.category,
-        tags: data.tags || [],
+        name,
+        description,
+        category,
+        tags,
+        image_url,
         user_rating: 0,
         rating_count: 0,
         created_by: session.data.user_id,
       });
       
-      return new Response(JSON.stringify({
-        success: true,
-        data: product
-      }), {
-        status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      // redirect back to home page
+      const url = new URL(request.url);
+      return Response.redirect(`${url.protocol}//${url.host}/`, 302);
+      
     } catch (error) {
       return new Response(JSON.stringify({
         success: false,

@@ -58,18 +58,18 @@
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <h2>Add New Product</h2>
-                <form id="add-product-form">
-                    <input type="text" id="product-name" placeholder="Product Name" required>
-                    <textarea id="product-description" placeholder="Description"></textarea>
-                    <select id="product-category" required>
+                <form id="add-product-form" action="/api/products" method="POST" enctype="multipart/form-data">
+                    <input type="text" id="product-name" name="name" placeholder="Product Name" required>
+                    <textarea id="product-description" name="description" placeholder="Description"></textarea>
+                    <select id="product-category" name="category" required>
                         <option value="">Select Category</option>
                         <option value="tropical">Tropical</option>
                         <option value="freshwater">Freshwater</option>
                         <option value="saltwater">Saltwater</option>
                         <option value="exotic">Exotic</option>
                     </select>
-                    <input type="text" id="product-tags" placeholder="Tags (comma separated)">
-                    <input type="file" id="product-image">
+                    <input type="text" id="product-tags" name="tags" placeholder="Tags (comma separated)">
+                    <input type="file" id="product-image" name="image" accept="image/*">
                     <button type="submit">Add Product</button>
                 </form>
             </div>

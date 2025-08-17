@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "wrangler pages dev public --compatibility-date=2024-01-01 --d1=DB:75bd790a-c51a-441d-8d81-06dd83edd342",
     "deploy": "wrangler pages deploy public",
-    "db:migrate": "wrangler d1 execute aquarium-db --file=src/db/migrations/001_initial_schema.sql",
-    "db:migrate-production": "wrangler d1 execute aquarium-db --file=src/db/migrations/001_initial_schema.sql --env preview --remote",
+    "db:migrate": "wrangler d1 execute aquarium-db",
+    "db:migrate-production": "wrangler d1 execute aquarium-db --env preview --remote",
     "db:seed": "node src/db/seeds/sample_products.js",
     "build": "echo 'No build step needed for this setup'"
   },

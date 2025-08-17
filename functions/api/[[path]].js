@@ -23,6 +23,8 @@ export async function onRequest(context) {
   const path = url.pathname;
   const method = request.method;
   
+  console.log('asdf',path.startsWith('/img/'), method === 'GET');
+
   // Health check endpoint
   if (path === '/api/health') {
     return new Response(JSON.stringify({
@@ -37,7 +39,6 @@ export async function onRequest(context) {
     });
   }
 
-  
   // Route products API
   if (path.startsWith('/api/products')) {
     const segments = path.split('/');
@@ -103,8 +104,6 @@ export async function onRequest(context) {
         response = await userRoutes.list(request, env);
       } else if (method === 'POST' && path.startsWith("/api/users/login")) {
         response = await userRoutes.login(request, env);
-      } else if (method === 'POST' && path.startsWith("/api/users/upload")) {
-        response = await userRoutes.upload(request, env);
        } else if (method === 'POST' && !id) {
         response = await userRoutes.create(request, env);
       } else if (method === 'GET' && id) {
