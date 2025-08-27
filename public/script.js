@@ -10,16 +10,17 @@ const registrationForm = document.getElementById('registration-form');
 const loginForm = document.getElementById('login-form');
 const searchInput = document.getElementById('search-input');
 const categoryFilter = document.getElementById('category-filter');
-const closeModal = document.querySelector('.close');
+let closeModal = document.querySelector('.close');
 
 // Log-In Check
 let isLoggedIn = false;
+let loggedInUser = null;
 
 // State
 let products = [];
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   loadProducts();
   setupEventListeners();
 });
@@ -32,9 +33,9 @@ function setupEventListeners() {
   loginForm.addEventListener('submit', handleLogin);
   searchInput.addEventListener('input', filterProducts);
   categoryFilter.addEventListener('change', filterProducts);
-  
+
   // Close modal when clicking outside
-  window.addEventListener('click', function(event) {
+  window.addEventListener('click', function (event) {
     if (event.target === addProductModal) {
       closeAddProductModal();
     }
@@ -54,7 +55,7 @@ async function loadProducts() {
   try {
     const response = await fetch(`${API_BASE}/products`);
     const result = await response.json();
-    
+
     if (result.success) {
       products = result.data;
       renderProducts(products);
@@ -75,9 +76,9 @@ async function createProduct(productData) {
       },
       body: JSON.stringify(productData)
     });
-    
+
     const result = await response.json();
-    
+
     if (result.success) {
       loadProducts(); // Reload products
       closeAddProductModal();
@@ -97,14 +98,14 @@ async function deleteProduct(id) {
   if (!confirm('Are you sure you want to delete this product?')) {
     return;
   }
-  
+
   try {
     const response = await fetch(`${API_BASE}/products/${id}`, {
       method: 'DELETE'
     });
-    
+
     const result = await response.json();
-    
+
     if (result.success) {
       loadProducts(); // Reload products
     } else {
@@ -119,12 +120,12 @@ async function deleteProduct(id) {
 // UI Functions
 function renderProducts(productsToRender) {
   productsGrid.innerHTML = '';
-  
+
   if (productsToRender.length === 0) {
     productsGrid.innerHTML = '<p>No products found. Add your first product!</p>';
     return;
   }
-  
+
   productsToRender.forEach(product => {
     const productCard = createProductCard(product);
     productsGrid.appendChild(productCard);
@@ -134,12 +135,18 @@ function renderProducts(productsToRender) {
 function createProductCard(product) {
   const card = document.createElement('div');
   card.className = 'product-card';
-  
+
   const tags = Array.isArray(product.tags) ? product.tags : [];
   const tagsHtml = tags.map(tag => `<span class="tag">${tag}</span>`).join('');
-  
+
   const rating = '★'.repeat(Math.floor(product.user_rating)) + '☆'.repeat(5 - Math.floor(product.user_rating));
-  
+  const actionButtons = `
+      <div class="actions">
+      <button class="edit-btn" onclick="editProduct(${product.id})">Edit</button>
+      <button class="delete-btn" onclick="deleteProduct(${product.id})">Delete</button>
+    </div>
+    `;
+
   card.innerHTML = `
     <h3>${product.name}</h3>
     <div class="created_by">Created by: ${product.created_by || 'Anonymous'}</div>
@@ -148,12 +155,8 @@ function createProductCard(product) {
     <div class="rating">${rating} (${product.user_rating}/5)</div>
     <p>${product.description || 'No description available'}</p>
     <div class="tags">${tagsHtml}</div>
-    <div class="actions">
-      <button class="edit-btn" onclick="editProduct(${product.id})">Edit</button>
-      <button class="delete-btn" onclick="deleteProduct(${product.id})">Delete</button>
-    </div>
+    ${loggedInUser === product.created_by ? actionButtons : ""}
   `;
-  
   return card;
 }
 
@@ -169,30 +172,68 @@ function closeAddProductModal() {
 function filterProducts() {
   const searchTerm = searchInput.value.toLowerCase();
   const categoryFilter = document.getElementById('category-filter').value;
-  
+
   let filteredProducts = products;
-  
+
   // Filter by search term
   if (searchTerm) {
-    filteredProducts = filteredProducts.filter(product => 
+    filteredProducts = filteredProducts.filter(product =>
       product.name.toLowerCase().includes(searchTerm) ||
       product.description.toLowerCase().includes(searchTerm)
     );
   }
-  
+
   // Filter by category
   if (categoryFilter) {
-    filteredProducts = filteredProducts.filter(product => 
+    filteredProducts = filteredProducts.filter(product =>
       product.category === categoryFilter
     );
   }
-  
+
   renderProducts(filteredProducts);
 }
 
 // Placeholder functions for future implementation
 function editProduct(id) {
-  alert('Edit functionality will be implemented in Week 4');
+
+  // const product = products.find((product)=>product.id===id);
+  const product = products.find(function (product) {
+    return product.id === id;
+  });
+
+  
+
+  const editProduct = `
+            <div class="modal-content">
+                <span id="editmodalclose" class="close">&times;</span>
+                <h2>Edit New Product</h2>
+                <form id="edit-product-form" action="/api/products/${id}" method="POST" enctype="multipart/form-data">
+                    <input type="text" id="product-name" name="name" placeholder="Product Name" value="${product.name}" required>
+                    <textarea id="product-description" name="description" placeholder="Description">${product.description}</textarea>
+                    <select id="product-category" name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="tropical" ${product.category === "tropical" ? "selected" : ""}>Tropical</option>
+                        <option value="freshwater" ${product.category === "freshwater" ? "selected" : ""}>Freshwater</option>
+                        <option value="saltwater" ${product.category === "saltwater" ? "selected" : ""}>Saltwater</option>
+                        <option value="exotic" ${product.category === "exotic" ? "selected" : ""}>Exotic</option>
+                    </select>
+                    <input type="text" id="product-tags" name="tags" placeholder="Tags (comma separated)" value="${product.tags}" >
+                    <input type="file" id="product-image" name="image" accept="image/*" value="${product.image_url}">
+                    <button type="submit">Add Product</button>
+                </form>
+            </div>
+  `
+  const element = document.createElement("div");
+  element.id = "edit-product-modal";
+  element.className = "modal";
+  element.style.display = "block";
+  element.innerHTML = editProduct;
+  console.log({editProduct,element,product,id});
+  document.querySelector(".container").appendChild(element);
+  function closeEditProductModal() {
+    element.remove();
+  }
+  document.querySelector('#editmodalclose').addEventListener('click', closeEditProductModal);
 }
 
 // Make functions globally available
@@ -200,16 +241,16 @@ window.deleteProduct = deleteProduct;
 window.editProduct = editProduct;
 
 function open_registration() {
-  document.getElementById('registration_form').style.display="block";
+  document.getElementById('registration_form').style.display = "block";
 }
 
 function open_login() {
-  document.getElementById('login_form').style.display="block";
+  document.getElementById('login_form').style.display = "block";
 }
 
 async function handleRegister(event) {
   event.preventDefault();
-  
+
   const userData = {
     username: document.getElementById('username').value,
     first_name: document.getElementById('first_name').value,
@@ -226,9 +267,9 @@ async function handleRegister(event) {
       },
       body: JSON.stringify(userData)
     });
-    
+
     const result = await response.json();
-    
+
     if (result.success) {
       alert('Registration successful!');
       document.getElementById('registration_form').style.display = 'none';
@@ -260,14 +301,16 @@ async function handleLogin(event) {
       },
       body: JSON.stringify(userData)
     });
-    
+
     const result = await response.json();
-    
+
     if (result.success) {
       alert('Login successful!');
       document.getElementById('login_form').style.display = 'none';
       loginForm.reset();
       isLoggedIn = true;
+      loggedInUser = userData.username;
+      loadProducts();
     } else {
       alert('Login failed: ' + result.error);
     }
